@@ -10,8 +10,8 @@ def read_file():
 kolumna = {}
 
 decyzja = [row[len(read_file()[0])-1] for row in read_file()] #wyodrębniona tabela decyzyjna
-ileKolumn = len(read_file()[0])-1 #odjąć decyzyjna
-ileWierszy = len([row[0] for row in decyzja])
+atrrNumber = len(read_file()[0])-1 #odjąć decyzyjna
+rowNumber = len([row[0] for row in decyzja])
 unikatoweD = list(set([row[0] for row in decyzja])) #unikatowe w decyzji
 
 def unique_values(dataSet, col):
@@ -35,15 +35,15 @@ def propability(dataSet, dictoniary_values):
 def entropy(dataSet, dictoniary_values):
     entropy = 0
     for i in dictoniary_values.keys():
-        p = dictoniary_values[i]/ ileWierszy
+        p = dictoniary_values[i]/ rowNumber
         entropy += -p * log(p,2)
     return entropy
 
 
 print("=====")
-print(unique_values(read_file(), ileKolumn))
-print(propability(read_file(),unique_values(read_file(), ileKolumn)))
-print("Entropia (dec): ", entropy(read_file(),unique_values(read_file(), ileKolumn)))
+print(unique_values(read_file(), atrrNumber))
+print(propability(read_file(),unique_values(read_file(), atrrNumber)))
+print("Entropia (dec): ", entropy(read_file(),unique_values(read_file(), atrrNumber)))
 print("=====")
 bestGain = 0 
 
@@ -52,19 +52,19 @@ bestGain = 0
 def decisions(dataSet):
     bestGain = 0
     bestAtt = 0 
-    for el in range(ileKolumn): # dla każdej kolumny
-        danaKolumna = [row[el] for row in lista]
-        atrybuty = unique_values(dataSet, el)
-        sumaAtrybutow = sum(atrybuty.values())
+    for el in range(atrrNumber): # dla każdej kolumny
+        actualCol = [row[el] for row in dataSet]
+        atrr = unique_values(dataSet, el)
+        sumAtrr = sum(atrr.values())
         p={}
-        entr = entropy(lista,atrybuty) #entropia
+        entr = entropy(dataSet,atrr) #entropia
         
         print("A", el+ 1)
-        print(atrybuty)
-        print(sumaAtrybutow)
+        print(atrr)
+        print(sumAtrr)
                 
-        for row_number, row in enumerate(danaKolumna):#po wartosciach w danej kolumnie
-            temp = [decyzja[rowNb] for rowNb, row2 in enumerate(danaKolumna) if row2 == row]
+        for row_number, row in enumerate(actualCol):#po wartosciach w danej kolumnie
+            temp = [decyzja[rowNb] for rowNb, row2 in enumerate(actualCol) if row2 == row]
             p[row] = {a:  temp.count(a) for wart in temp for a in decyzja}
 
         info=0
@@ -74,14 +74,14 @@ def decisions(dataSet):
             print("Decyzje")
             d = p[k]
             suma2 = sum(d.values())
-            prop = propability(lista, d)
+            prop = propability(dataSet, d)
             print("\t", d)            
             print("\t", prop)
-            print("\t", (-1)*sum([p * log(p,2) for p in prop if p!=0]),'*', suma2/sumaAtrybutow)
-            info += (suma2/sumaAtrybutow * (-1)*sum([p * log(p,2) for p in prop if p!=0]))
-            split += (suma2/sumaAtrybutow * (-1)*sum([suma2/sumaAtrybutow * log(suma2/sumaAtrybutow,2) for p in prop if p!=0]))
+            print("\t", (-1)*sum([p * log(p,2) for p in prop if p!=0]),'*', suma2/sumAtrr)
+            info += (suma2/sumAtrr * (-1)*sum([p * log(p,2) for p in prop if p!=0]))
+            split += (suma2/sumAtrr * (-1)*sum([suma2/sumAtrr * log(suma2/sumAtrr,2) for p in prop if p!=0]))
 
-        gain = entropy(lista,unique_values(lista, ileKolumn)) - info
+        gain = entropy(dataSet,unique_values(dataSet, atrrNumber)) - info
             
         print("Info A{0}: {1}".format(el + 1, info))
         print("Gain: ", gain)
@@ -97,5 +97,6 @@ def decisions(dataSet):
             
     return "Wybrany atrybut A{0}, bo w tym przypadku najwyższa jest wartość Gain: {1}".format(bestAtt, bestGain)
 
-print(decisions(lista))
+print(decisions(read_file()))
+    
 
