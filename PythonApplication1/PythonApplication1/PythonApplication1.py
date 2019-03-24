@@ -45,11 +45,8 @@ print(unique_values(read_file(), atrrNumber))
 print(propability(read_file(),unique_values(read_file(), atrrNumber)))
 print("Entropia (dec): ", entropy(read_file(),unique_values(read_file(), atrrNumber)))
 print("=====")
-bestGain = 0 
 
-
-
-def decisions(dataSet):
+def best_gain(dataSet):
     bestGain = 0
     bestAtt = 0 
     for el in range(atrrNumber): # dla każdej kolumny
@@ -78,9 +75,9 @@ def decisions(dataSet):
             print("\t", d)            
             print("\t", prop)
             print("\t", (-1)*sum([p * log(p,2) for p in prop if p!=0]),'*', suma2/sumAtrr)
-            info += (suma2/sumAtrr * (-1)*sum([p * log(p,2) for p in prop if p!=0]))
-            split += (suma2/sumAtrr * (-1)*sum([suma2/sumAtrr * log(suma2/sumAtrr,2) for p in prop if p!=0]))
-
+            
+        info += (suma2/sumAtrr * (-1)*sum([p * log(p,2) for p in prop if p!=0]))
+        split += (suma2/sumAtrr * (-1)*sum([suma2/sumAtrr * log(suma2/sumAtrr,2) for p in prop if p!=0]))
         gain = entropy(dataSet,unique_values(dataSet, atrrNumber)) - info
             
         print("Info A{0}: {1}".format(el + 1, info))
@@ -95,8 +92,48 @@ def decisions(dataSet):
             
         kolumna[el+1] = p
             
-    return "Wybrany atrybut A{0}, bo w tym przypadku najwyższa jest wartość Gain: {1}".format(bestAtt, bestGain)
+    #return "Wybrany atrybut A{0}, bo w tym przypadku najwyższa jest wartość Gain: {1}".format(bestAtt, bestGain)
+    return bestAtt, bestGain
 
-print(decisions(read_file()))
+
+def split_dataSet(dataSet, row_nb):
+    newSet = []
+    pass
+        
+    
+def build_tree(dataSet):
+    att, gain = best_gain(dataSet)
+    
+    if gain == 0:
+        return end_of_tree()
+    
+    return [att, gain]
+
+def end_of_tree(dataSet):
+    pass
+
+#print builded tree
+def print_tree(node):
+    pass
+
+print(build_tree(read_file()))
+
+    
+
+    
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+    
     
 
