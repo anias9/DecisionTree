@@ -1,18 +1,14 @@
 from math import log
 
 def read_file():
-    with open('test2.txt', 'r') as file:
+    with open('test.txt', 'r') as file:
         element = [line.strip() for line in file]
 
-    lista = [el.split(',') for el in element]
-    return lista
-
-kolumna = {}
+    return [el.split(',') for el in element]    
 
 decyzja = [row[len(read_file()[0])-1] for row in read_file()] #wyodrębniona tabela decyzyjna
 atrrNumber = len(read_file()[0])-1 #odjąć decyzyjna
 rowNumber = len([row[0] for row in decyzja])
-unikatoweD = list(set([row[0] for row in decyzja])) #unikatowe w decyzji
 
 def unique_values(dataSet, col):
     counts = {} 
@@ -46,9 +42,9 @@ print(propability(read_file(),unique_values(read_file(), atrrNumber)))
 print("Entropia (dec): ", entropy(read_file(),unique_values(read_file(), atrrNumber)))
 print("=====")
 
-def best_gain(dataSet):
-    bestGain = 0
-    bestAtt = 0 
+def gain(dataSet):
+    all_gains= []
+
     for el in range(atrrNumber): # dla każdej kolumny
         actualCol = [row[el] for row in dataSet]
         atrr = unique_values(dataSet, el)
@@ -76,24 +72,27 @@ def best_gain(dataSet):
             print("\t", prop)
             print("\t", (-1)*sum([p * log(p,2) for p in prop if p!=0]),'*', suma2/sumAtrr)
             
-        info += (suma2/sumAtrr * (-1)*sum([p * log(p,2) for p in prop if p!=0]))
-        split += (suma2/sumAtrr * (-1)*sum([suma2/sumAtrr * log(suma2/sumAtrr,2) for p in prop if p!=0]))
+            info += (suma2/sumAtrr * (-1)*sum([p * log(p,2) for p in prop if p!=0]))
+            split += (suma2/sumAtrr * (-1)*sum([suma2/sumAtrr * log(suma2/sumAtrr,2) for p in prop if p!=0]))
+
         gain = entropy(dataSet,unique_values(dataSet, atrrNumber)) - info
-            
+        all_gains.append(gain)
+        
         print("Info A{0}: {1}".format(el + 1, info))
         print("Gain: ", gain)
         print("Split: ", split)
         print("Gain Ratio: ", gain/split)
         print("\n")
+                        
+    return all_gains
 
+def best_gain(gains):
+    bestGain = 0
+    for gain in gains:
         if gain > bestGain:
             bestGain = gain
-            bestAtt = el + 1
-            
-        kolumna[el+1] = p
-            
-    #return "Wybrany atrybut A{0}, bo w tym przypadku najwyższa jest wartość Gain: {1}".format(bestAtt, bestGain)
-    return bestAtt, bestGain
+            att = gains.index(gain) + 1
+    return att, bestGain
 
 
 def split_dataSet(dataSet, row_nb):
@@ -109,31 +108,13 @@ def build_tree(dataSet):
     
     return [att, gain]
 
+
 def end_of_tree(dataSet):
     pass
+
 
 #print builded tree
 def print_tree(node):
     pass
 
-print(build_tree(read_file()))
-
-    
-
-    
-    
-
-    
-
-
-
-
-
-
-
-
-
-
-    
-    
-
+print("Najlepszy jest A{0}, ponieważ ma najwiekszy Gain: {1} ".format(best_gain(gain(read_file()))[0], best_gain(gain(read_file()))[1]))
