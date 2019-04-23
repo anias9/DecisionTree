@@ -8,14 +8,6 @@ def read_file():
 
     return [el.split(',') for el in element]
 
-
-#table with numbers of att -> A1, A2, A3...
-def features(dataSet):
-    names = []
-    for i in range(len(dataSet[0])-1):
-        names.append("A" + str(i+1))
-    return names
-
 #counts unique values in given column
 def unique_values(dataSet, col):
     counts = {}
@@ -137,7 +129,7 @@ def new_data(dataSet, axis, value):
     return newSet
 
 #feature -> decision table
-def build_tree(dataSet, feature):
+def build_tree(dataSet):
     bestFeature, bestGain = best_gain(gain(dataSet))
     classList = decision_column(dataSet)
 
@@ -158,18 +150,16 @@ def build_tree(dataSet, feature):
         return class_counts(classList)
 
     # Creating tree
-    best_feature_name = feature[bestFeature]
-    tree = {best_feature_name: {}}
+    best_feature_name = "A" + str(bestFeature+1)
+    tree = { best_feature_name: {}}
 
     #delete bestFeature from feature table
-    del(feature[bestFeature])
     featuresample = [example[bestFeature] for example in dataSet]
 
     uniqueVals = set(featuresample)
 
     for value in uniqueVals:
-        subfeature = feature[:]
-        tree[best_feature_name][value] = build_tree(new_data(dataSet, bestFeature, value), subfeature)
+        tree[best_feature_name][value] = build_tree(new_data(dataSet, bestFeature, value))
 
     return tree
 
@@ -186,9 +176,8 @@ def print_tree(d, indent=0):
 
 
 data = read_file()
-feature = features(read_file())
-myTree = build_tree(data,feature)
+myTree = build_tree(data)
 print(json.dumps(myTree, indent=4, sort_keys=True))  # It will print the keys in ascending order, not in descending
 
-print_tree(myTree)
+#print_tree(myTree)
 #print("Najlepszy jest A{0}, ponieważ ma najwiekszy Gain: {1} ".format(best_gain(gain(read_file()))[0], best_gain(gain(read_file()))[1]))
